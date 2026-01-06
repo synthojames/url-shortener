@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, inital-scale=1.0">
+    <title>URL Shortener</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔗 URL Shortener</h1>
+            <p>Create and manage your short links</p>
+        </header>
+        <section class="shorten-section">
+            <h2>Shorten a URL</h2>
+            <form id="shortenForm">
+                <input 
+                    type="url" 
+                    id="urlInput" 
+                    placeholder="Enter your long URL here..." 
+                    required
+                >
+                <button type="submit">Shorten URL</button>
+            </form>
+
+            <div id="result" class="result hidden">
+                <p>Your short URL:</p>
+                <div class="short-url-display">
+                    <input type="text" id="shortUrlOutput" readonly>
+                    <button id="copyBtn">Copy</button>
+                </div>
+            </div>
+        </section>
+        <section class="urls-section">
+            <h2>Your URLs</h2>
+            <button id="refreshBtn">🔄 Refresh</button>
+            
+            <div id="urlsList">
+                <p class="loading">Loading...</p>
+            </div>
+        </section>
+        <div id="statsModal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>URL Statistics</h2>
+                <div id="statsContent">
+                <!-- Stats will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
