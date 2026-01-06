@@ -28,7 +28,7 @@ services:
       - "3000:3000"
     environment:
       - PORT=3000
-      - MONGODB_URI=mongodb://mongodb:27017/urlshortener
+      - MONGODB_URI=mongodb://mongodb:27017/url-shortener
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - BASE_URL=http://localhost:3000
