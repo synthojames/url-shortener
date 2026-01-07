@@ -14,13 +14,16 @@ const closeModal = document.querySelector('.close');
 shortenForm.addEventListener('submit', async (event) =>{
     event.preventDefault();
 
+    //set url equal to the input value
     const url = urlInput.value.trim();
+    //validate url for null
     if(!url){
         alert('Enter a URL');
         return;
     }
 
     try{
+        //shorten the url using api call
         const response = await fetch('/api/shorten', {
             method: 'POST',
             headers: {
@@ -31,10 +34,13 @@ shortenForm.addEventListener('submit', async (event) =>{
         if(!response.ok){
             throw new Error('Failed to shorten URL');
         }
+        //set data equal to the json reply from the function
         const data = await response.json();
         console.log('API returned', data);
+        //insert the new url and unhide the box
         shortUrlOutput.value = data.shortUrl;
         resultDiv.classList.remove('hidden');
+        //reset the input for a new entry
         urlInput.value='';
     } catch (error) {
         console.error('Error:', error);
@@ -46,8 +52,10 @@ shortenForm.addEventListener('submit', async (event) =>{
 copyBtn.addEventListener('click', async () => {
     const shortUrl = shortUrlOutput.value;
     try{
+        //copy the shortUrl to clipboard
         await navigator.clipboard.writeText(shortUrl);
         console.log('Copied to clipboard');
+        //change the button to say copied briefly for the user
         const originalText = copyBtn.textContent;
         copyBtn.textContent = 'Copied!';
         copyBtn.style.background = '#48BB78';
@@ -65,6 +73,7 @@ copyBtn.addEventListener('click', async () => {
 
 //load and display all urls
 
+//Creates ONE url object to be shown.
 function createUrlElement(url) {
     const div = document.createElement('div');
     div.className = 'url-item';
@@ -85,15 +94,18 @@ function createUrlElement(url) {
     `;
     return div;
 }
-
+//load a list of all the URLS
 async function loadUrls() {
     try{
         urlsList.innerHTML = '<p class="loading">Loading</p>';
+        //fetch all urls from the api
         const response = await fetch('/api/urls');
         if(!response.ok){
             throw new Error('Failed to load URLS');
         }
+        //save the replies in data variable
         const data = await response.json();
+        //if there is no urls, show an empty box
         if(data.urls.length === 0) {
             urlsList.innerHTML = `
                 <div class="empty">
@@ -103,6 +115,7 @@ async function loadUrls() {
             `;
             return;
         }
+        //for each url in the list, call the previous functio to create url html elements and append them
         urlsList.innerHTML = '';
         data.urls.forEach(url => {
             const urlItem = createUrlElement(url);
@@ -116,6 +129,8 @@ async function loadUrls() {
 }
 
 //Stats button
+
+//call function showStats when stats button is clicked, call function deleteURl if delete button is clicked
 urlsList.addEventListener('click', async (event) => {
     if (event.target.classList.contains('stats-btn')) {
         const shortCode = event.target.dataset.code;
@@ -127,15 +142,19 @@ urlsList.addEventListener('click', async (event) => {
     }
 });
 
+//the actual showStats function
 async function showStats(shortCode) {
     try{
         statsContent.innerHTML = '<p class="loading">Loading</p>';
         statsModal.classList.remove('hidden');
+        //fetch the stats using the api
         const response = await fetch(`/api/stats/${shortCode}`);
         if(!response.ok){
             throw new Error('Failed to load stats');
         }
+        //assign data the json reply from the api
         const data = await response.json();
+        //call displayStats function using returned data
         displayStats(data);
     } catch (error) {
         console.error('Error loading stats:', error);
@@ -143,6 +162,7 @@ async function showStats(shortCode) {
     }
 }
 
+//creates the HTML to be displayed when stats button is clicked and the data is fetched
 function displayStats(data) {
     statsContent.innerHTML = `
         <div class="stat-item">
@@ -185,12 +205,14 @@ function displayStats(data) {
     `;
 }
 
+//function that will deleteUrl
 async function deleteUrl(shortCode){
     const confirmed = confirm(`Are you sure you want to delete ${shortCode}?`);
     if (!confirmed) {
         return;
     }
     try{
+        //use the api method 'delete' to get rid of the shortened url
         const response = await fetch(`/api/urls/${shortCode}`, {
             method: 'DELETE'
         });
@@ -198,9 +220,11 @@ async function deleteUrl(shortCode){
         if (!response.ok) {
             throw new Error('Failed to delete');
         }
+        //receive the confirmation or failure
         const data = await response.json();
         console.log('Deleted:', data);
 
+        //reload the loadUrls to show its deletion
         await loadUrls();
 
         alert('URL Deleted');
