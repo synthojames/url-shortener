@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   mongodb:
     image: mongo:latest
@@ -7,7 +9,7 @@ services:
     volumes:
       - mongodb_data:/data/db
     environment:
-      - MONGO_INITDB_DATABASE=url-shortener
+      - MONGO_INITDB_DATABASE=urlshortener
     networks:
       - app-network
   
@@ -15,7 +17,7 @@ services:
     image: redis:latest
     container_name: url-shortener-redis
     ports:
-      - '6379:6379'
+      - "6379:6379"
     volumes:
       - redis_data:/data
     networks:
@@ -28,10 +30,10 @@ services:
       - "3000:3000"
     environment:
       - PORT=3000
-      - MONGODB_URI=mongodb://mongodb:27017/url-shortener
+      - MONGODB_URI=mongodb://mongodb:27017/urlshortener
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - BASE_URL=http://localhost:3000
+      - BASE_URL=https://shorten.syntho.moe
       - NODE_ENV=production
     depends_on:
       - mongodb
@@ -41,23 +43,24 @@ services:
     restart: unless-stopped
   
   nginx:
-   image: nginx:alpine
-   container_name: url-shortener-nginx
-   ports:
-   - "80:80"
-   volumes:
-   - ./nginx.conf:/etc/nginx/nginx.conf:ro
-   depends_on:
-   - app
-   networks:
-   - app-network
-   restart: unless-stopped
-
-
-
+    image: nginx:alpine
+    container_name: url-shortener-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - app
+    networks:
+      - app-network
+    restart: unless-stopped
+    
 volumes:
   mongodb_data:
   redis_data:
+
 networks:
- app-network:
-  driver: bridge
+  app-network:
+    driver: bridge
