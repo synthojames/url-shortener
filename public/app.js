@@ -79,8 +79,8 @@ function createUrlElement(url) {
     div.className = 'url-item';
 
     div.innerHTML = `
-        <div class="url-info">
-            <div class="short-code">${url.shortCode}</div>
+        <div class="url-info" data-code="${url.shortCode}">
+            <div class="short-code">www.shorten.syntho.moe/${url.shortCode}</div>
             <div class="original-url">${url.originalUrl}</div>
             <div class="meta">
                 Created: ${new Date(url.createdAt).toLocaleDateString()} |
@@ -139,6 +139,17 @@ urlsList.addEventListener('click', async (event) => {
     else if (event.target.classList.contains('delete-btn')){
         const shortCode = event.target.dataset.code;
         await deleteUrl(shortCode);
+    }    
+    else if(event.target.classList.contains('url-item') && !event.target.classList.contains('stats-btn') && !event.target.classList.contains('delete-btn')){
+        const shortCode = event.target.dataset.code;
+        await navigator.clipboard.writeText(`https://www.shorten.syntho.moe/${shortCode}`);
+        
+        const originalHTML = event.target.innerHTML;
+        event.target.innerHTML = `<div>Copied!</div>`;
+
+        setTimeout(() => {
+            event.target.innerHTML = originalHTML;
+        }, 1000);
     }
 });
 
@@ -167,7 +178,7 @@ function displayStats(data) {
     statsContent.innerHTML = `
         <div class="stat-item">
             <h3>URL Information</h3>
-            <p><strong>Short Code:</strong> ${data.shortCode}</p>
+            <p><strong>Shortened URL:</strong> www.shorten.syntho.moe/${data.shortCode}</p>
             <p><strong>Original URL:</strong> ${data.originalUrl}</p>
             <p><strong>Created:</strong> ${new Date(data.createdAt).toLocaleString()}</p>
         </div>
