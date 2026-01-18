@@ -140,15 +140,17 @@ urlsList.addEventListener('click', async (event) => {
         const shortCode = event.target.dataset.code;
         await deleteUrl(shortCode);
     }    
-    else if(event.target.classList.contains('url-item') && !event.target.classList.contains('stats-btn') && !event.target.classList.contains('delete-btn')){
-        const shortCode = event.target.dataset.code;
+    else if(event.target.closest('.url-info') && !event.target.classList.contains('stats-btn') && !event.target.classList.contains('delete-btn')){
+        const urlInfo = event.target.closest('.url-info');
+        const shortCode = urlInfo.dataset.code;
         await navigator.clipboard.writeText(`https://www.shorten.syntho.moe/${shortCode}`);
+
         
-        const originalHTML = event.target.innerHTML;
-        event.target.innerHTML = `<div>Copied!</div>`;
+        const originalHTML = urlInfo.innerHTML;
+        urlInfo.innerHTML = `<div>Copied!</div>`;
 
         setTimeout(() => {
-            event.target.innerHTML = originalHTML;
+            urlInfo.innerHTML = originalHTML;
         }, 1000);
     }
 });
